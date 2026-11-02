@@ -1,0 +1,50 @@
+{
+  "Voice": "Microsoft Zira Desktop",
+  "Language": "en-US",
+  "Texts": [
+    "Codex. Boot sequence initiated.",
+    "Command interface. Connection verified.",
+    "Workspace link established. Synchronizing.",
+    "Synchronization complete. All systems nominal.",
+    "Codex online. Awaiting command."
+  ],
+  "Metrics": [
+    {
+      "InputRms": 0.07668051862660935,
+      "OutputRms": 0.20254306778647987,
+      "OutputPeak": 0.8785863697617908,
+      "Seconds": 3.9882993197278913,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.09054267326792571,
+      "OutputRms": 0.2035893556576872,
+      "OutputPeak": 0.8550570390163699,
+      "Seconds": 4.270204081632653,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.07485701826825995,
+      "OutputRms": 0.20227224996180748,
+      "OutputPeak": 0.8873557719116212,
+      "Seconds": 4.514648526077098,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.09324699864004667,
+      "OutputRms": 0.20597499309267342,
+      "OutputPeak": 0.8298848689166471,
+      "Seconds": 4.802040816326531,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.08986922042385574,
+      "OutputRms": 0.20534832732688754,
+      "OutputPeak": 0.8544924256952089,
+      "Seconds": 3.9670748299319727,
+      "Finite": true
+    }
+  ],
+  "PostGain": 1.1,
+  "Processing": "轻微降调；38 Hz 调制；短延迟立体声叠声；压缩与归一化后再提高 10% 音量"
+}

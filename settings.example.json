@@ -1,0 +1,16 @@
+{
+  "Enabled": true,
+  "Mode": "eva",
+  "MediaPath": "",
+  "ImageSeconds": 4,
+  "EvaSeconds": 24,
+  "VoiceEnabled": true,
+  "VoiceVolume": 1.0,
+  "BgmEnabled": true,
+  "BgmVolume": 0.385,
+  "FadeSeconds": 0.5,
+  "Volume": 0,
+  "Fit": "cover",
+  "AppId": "OpenAI.Codex_2p2nqsd0c76g0!App",
+  "ConfirmRequired": true
+}

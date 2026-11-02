@@ -1,0 +1,7 @@
+CodexOpening.exe
+*.lnk
+*.bak
+*.tmp
+artifacts/
+settings.json
+settings.before-eva.json
