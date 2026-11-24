@@ -35,6 +35,20 @@
     root.style.setProperty('--dsu-box-ink',palette.white)
     ui.w4.textContent='欢迎 '+C.identity+' 访问'
 
+    // 同一张透明角色素材派生线稿与彩色层，避免上色时五官、衣饰和轮廓跳位。
+    var dragon=document.createElement('div')
+    dragon.className='codex-dragon';dragon.setAttribute('aria-hidden','true')
+    dragon.innerHTML='<svg class="codex-dragon-defs" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><defs>'+
+      '<filter id="codex-dragon-ink" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB">'+
+      '<feColorMatrix in="SourceGraphic" type="luminanceToAlpha" result="luminance"/>'+
+      '<feComponentTransfer in="luminance" result="ink"><feFuncA type="table" tableValues="1 .95 .55 .08 0 0"/></feComponentTransfer>'+
+      '<feFlood flood-color="'+palette.black+'" result="inkColor"/>'+
+      '<feComposite in="inkColor" in2="ink" operator="in" result="lines"/>'+
+      '<feComposite in="lines" in2="SourceAlpha" operator="in"/></filter></defs></svg>'+
+      '<img class="codex-dragon-line" src="../dragon/dragon-front-v1.png" alt="" decoding="async" draggable="false">'+
+      '<img class="codex-dragon-color" src="../dragon/dragon-front-v1.png" alt="" decoding="async" draggable="false">'
+    root.insertBefore(dragon,ui.grain||ui.black)
+
     // 核验时让圆弧避让实际文字包围框，逐字动画和窗口缩放期间也保留阅读净空。
     var ns='http://www.w3.org/2000/svg',reticleSvg=ui.reticle.querySelector('svg')
     var drawing=document.createElementNS(ns,'g'),defs=document.createElementNS(ns,'defs')

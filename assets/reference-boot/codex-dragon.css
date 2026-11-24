@@ -1,0 +1,58 @@
+/* 角色置于右侧背景，左侧与底部淡出，为标题、授权按钮和页脚保留阅读空间。 */
+@property --codex-dragon-paint {
+  syntax:"<percentage>";
+  inherits:true;
+  initial-value:-8%;
+}
+#dsh-startup-root .codex-dragon {
+  position:absolute;
+  right:3.5%;
+  top:18%;
+  width:31%;
+  height:74%;
+  z-index:3;
+  opacity:0;
+  pointer-events:none;
+  --codex-dragon-paint:-8%;
+  transition:opacity 800ms ease,--codex-dragon-paint 2400ms cubic-bezier(.22,.61,.36,1);
+  -webkit-mask-image:linear-gradient(90deg,transparent 0%,#000 30%,#000 94%,transparent 100%),linear-gradient(180deg,#000 0%,#000 80%,transparent 100%);
+  mask-image:linear-gradient(90deg,transparent 0%,#000 30%,#000 94%,transparent 100%),linear-gradient(180deg,#000 0%,#000 80%,transparent 100%);
+  -webkit-mask-composite:source-in;
+  mask-composite:intersect;
+}
+#dsh-startup-root[data-codex-step]:not([data-codex-step="0"]) .codex-dragon { opacity:1; }
+#dsh-startup-root .codex-dragon-defs { position:absolute;width:0;height:0;overflow:hidden; }
+#dsh-startup-root .codex-dragon img {
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  object-fit:contain;
+  object-position:center bottom;
+  user-select:none;
+}
+#dsh-startup-root .codex-dragon-line {
+  filter:url(#codex-dragon-ink);
+  opacity:0.30;
+}
+#dsh-startup-root[data-codex-step]:not([data-codex-step="0"]) .codex-dragon-line {
+  animation:codex-dragon-trace 1900ms cubic-bezier(.22,.61,.36,1) both;
+}
+@keyframes codex-dragon-trace {
+  from { clip-path:inset(0 0 100% 0); }
+  to { clip-path:inset(0 0 0 0); }
+}
+#dsh-startup-root .codex-dragon-color {
+  opacity:0.52;
+  -webkit-mask-image:linear-gradient(180deg,#000 0%,#000 calc(var(--codex-dragon-paint) - 4%),transparent calc(var(--codex-dragon-paint) + 4%),transparent 100%);
+  mask-image:linear-gradient(180deg,#000 0%,#000 calc(var(--codex-dragon-paint) - 4%),transparent calc(var(--codex-dragon-paint) + 4%),transparent 100%);
+}
+#dsh-startup-root[data-codex-step="2"] .codex-dragon { --codex-dragon-paint:20%; }
+#dsh-startup-root[data-codex-step="3"] .codex-dragon { --codex-dragon-paint:45%; }
+#dsh-startup-root[data-codex-step="4"] .codex-dragon { --codex-dragon-paint:72%; }
+#dsh-startup-root[data-codex-step="5"] .codex-dragon { --codex-dragon-paint:94%; }
+#dsh-startup-root[data-codex-step="6"] .codex-dragon { --codex-dragon-paint:108%; }
+@media (prefers-reduced-motion:reduce) {
+  #dsh-startup-root .codex-dragon { transition-duration:0ms; }
+  #dsh-startup-root .codex-dragon-line { animation-duration:1ms; }
+}
