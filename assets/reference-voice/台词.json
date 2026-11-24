@@ -1,0 +1,57 @@
+{
+  "Voice": "Microsoft Zira Desktop",
+  "Language": "en-US",
+  "Texts": [
+    "Access permission required.",
+    "Identity verification.",
+    "Access request received.",
+    "Beginning permission read.",
+    "Read complete. Verification passed.",
+    "Welcome to Codex. Your session is ready."
+  ],
+  "Metrics": [
+    {
+      "InputRms": 0.09109055982504555,
+      "OutputRms": 0.20942730969981316,
+      "OutputPeak": 0.8570536753633471,
+      "Seconds": 2.600090702947846,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.09888501144918116,
+      "OutputRms": 0.20555175235000675,
+      "OutputPeak": 0.8032065079464638,
+      "Seconds": 2.4138321995464853,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.08254511259114847,
+      "OutputRms": 0.20447112768663875,
+      "OutputPeak": 0.8776379185023687,
+      "Seconds": 2.573560090702948,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.10889842593727353,
+      "OutputRms": 0.217315957346497,
+      "OutputPeak": 0.7558927512791884,
+      "Seconds": 2.3554648526077098,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.0858136633562096,
+      "OutputRms": 0.19934281180449517,
+      "OutputPeak": 0.8713322316001846,
+      "Seconds": 4.084126984126984,
+      "Finite": true
+    },
+    {
+      "InputRms": 0.08430438302937078,
+      "OutputRms": 0.2010101228720158,
+      "OutputPeak": 0.872631016948036,
+      "Seconds": 4.142539682539683,
+      "Finite": true
+    }
+  ],
+  "PostGain": 1.1
+}

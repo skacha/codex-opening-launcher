@@ -5,3 +5,6 @@ CodexOpening.exe
 artifacts/
 settings.json
 settings.before-eva.json
+Microsoft.Web.WebView2.*.dll
+WebView2Loader.dll
+MotionPreview.exe

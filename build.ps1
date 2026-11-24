@@ -1,9 +1,12 @@
 $ErrorActionPreference = 'Stop'
+& (Join-Path $PSScriptRoot 'restore-webview.ps1')
 $compilerPath = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\csc.exe'
 $frameworkPath = Join-Path $env:WINDIR 'Microsoft.NET\Framework64\v4.0.30319\WPF'
 $references = @('PresentationFramework.dll', 'PresentationCore.dll', 'WindowsBase.dll') | ForEach-Object { '/reference:' + (Join-Path $frameworkPath $_) }
+$references += @('Microsoft.Web.WebView2.Core.dll','Microsoft.Web.WebView2.Wpf.dll') | ForEach-Object { '/reference:' + (Join-Path $PSScriptRoot $_) }
+$references += '/reference:System.Drawing.dll'
 $arguments = @('/nologo', '/target:winexe', '/platform:x64', '/optimize+', '/utf8output', '/reference:System.Web.Extensions.dll', '/reference:System.Xaml.dll', ('/win32manifest:' + (Join-Path $PSScriptRoot 'app.manifest')), ('/out:' + (Join-Path $PSScriptRoot 'CodexOpening.exe'))) + $references + @((Join-Path $PSScriptRoot 'Launcher.cs'), (Join-Path $PSScriptRoot 'EvaBootScene.cs'), (Join-Path $PSScriptRoot 'DisplayHandoff.cs'), (Join-Path $PSScriptRoot 'BootTimeline.cs'))
-& $compilerPath @arguments
+& $compilerPath @arguments (Join-Path $PSScriptRoot 'ReferenceBootWindow.cs')
 if ($LASTEXITCODE -ne 0) { throw '启动器编译失败。' }
 $artifactPath = Join-Path $PSScriptRoot 'artifacts'
 New-Item -ItemType Directory -Path $artifactPath -Force | Out-Null
@@ -14,3 +17,4 @@ if ($LASTEXITCODE -ne 0) { throw '背景音乐生成器编译失败。' }
 if ($LASTEXITCODE -ne 0) { throw '背景音乐生成失败。' }
 Write-Output '启动器编译成功。'
 & (Join-Path $PSScriptRoot 'build-voice.ps1')
+& (Join-Path $PSScriptRoot 'build-reference-voice.ps1')

@@ -84,6 +84,8 @@ namespace CodexOpening
         public static bool UserConfirmed;
         public static bool AutoConfirm;
         public static bool AwaitedConfirmation;
+        public static int ReferenceStep;
+        public static int ReferenceConfirmations;
         public static double SequenceSeconds;
         public static long LaunchAtMs;
         public static long IntroFinishedAtMs;
@@ -137,11 +139,12 @@ namespace CodexOpening
                     {
                         if ((!p.Enabled || args.Contains("--no-animation")) && !Preview)
                         { Launch(p); Outcome = "动画关闭"; }
+                        else if (p.Mode == "eva") app.Run(new ReferenceBootWindow(p, false));
                         else app.Run(new SplashWindow(p));
                     }
                     finally { if (owns) mutex.ReleaseMutex(); }
                 }
-                return LaunchRequested && !LaunchSucceeded ? 1 : 0;
+                return Outcome == "参考动画加载失败" || LaunchRequested && !LaunchSucceeded ? 1 : 0;
             }
             catch (Exception e)
             {
@@ -210,11 +213,13 @@ namespace CodexOpening
                 displayDevice = DisplayDevice, splashDevice = SplashDevice, sameMonitor = SameMonitor, voiceCues = VoiceCues,
                 launchAtMs = LaunchAtMs, introFinishedAtMs = IntroFinishedAtMs,
                 userConfirmed = UserConfirmed, awaitedConfirmation = AwaitedConfirmation, voiceCompleted = VoiceCompleted,
-                repairedOverlays = RepairedOverlays, sequenceSeconds = SequenceSeconds, visualStatistics = VisualStatistics
+                repairedOverlays = RepairedOverlays, sequenceSeconds = SequenceSeconds, visualStatistics = VisualStatistics,
+                referenceStep = ReferenceStep, referenceConfirmations = ReferenceConfirmations
             }), Encoding.UTF8);
         }
         private static int Render(Preferences p, string output)
         {
+            if (p.Mode == "eva") return ReferenceBootWindow.Render(p, output, Math.Max(0, Math.Min(6, (int)Math.Round(RenderProgress * 6))), RenderTime);
             var w = new SplashWindow(p); w.Width = 1280; w.Height = 720;
             var content = (FrameworkElement)w.Content;
             content.Measure(new Size(1280, 720)); content.Arrange(new Rect(0, 0, 1280, 720));
@@ -609,7 +614,7 @@ namespace CodexOpening
         private readonly Slider volume = new Slider { Minimum = 0, Maximum = 100, TickFrequency = 10 };
         private readonly CheckBox bgmEnabled = new CheckBox { Content = "Enable boot sequence background music" };
         private readonly Slider bgmVolume = new Slider { Minimum = 0, Maximum = 100, TickFrequency = 10 };
-        private readonly CheckBox voiceEnabled = new CheckBox { Content = "Enable English AI voice (24s recommended; muted below 15s)" };
+        private readonly CheckBox voiceEnabled = new CheckBox { Content = "Enable English mechanical voice" };
         private readonly CheckBox confirmRequired = new CheckBox { Content = "Wait for confirmation before entering Codex" };
         private readonly Slider voiceVolume = new Slider { Minimum = 0, Maximum = 100, TickFrequency = 10 };
         private readonly CheckBox enabled = new CheckBox { Content = "Enable startup sequence" };
@@ -625,13 +630,13 @@ namespace CodexOpening
             panel.Children.Add(new TextBlock { Text = "CODEX STARTUP CONTROL", FontSize = 23, Margin = new Thickness(0, 0, 0, 10) });
             panel.Children.Add(new TextBlock { Text = "Changes apply to the next launch from the Codex startup shortcut.", TextWrapping = TextWrapping.Wrap, Foreground = Brushes.DimGray, Margin = new Thickness(0, 0, 0, 22) });
             enabled.IsChecked = p.Enabled; panel.Children.Add(enabled);
-            mode.ItemsSource = new[] { "Built-in", "Image", "Video", "Codex · Command OS" }; mode.SelectedIndex = p.Mode == "eva" ? 3 : p.Mode == "image" ? 1 : p.Mode == "video" ? 2 : 0;
+            mode.ItemsSource = new[] { "Built-in", "Image", "Video", "Codex · Original sequence" }; mode.SelectedIndex = p.Mode == "eva" ? 3 : p.Mode == "image" ? 1 : p.Mode == "video" ? 2 : 0;
             Add(panel, "Startup content", mode);
             var row = new Grid(); row.ColumnDefinitions.Add(new ColumnDefinition()); row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             media.Text = p.MediaPath; media.Padding = new Thickness(7); row.Children.Add(media);
             var browse = new Button { Content = "Browse...", Padding = new Thickness(12, 6, 12, 6), Margin = new Thickness(10, 0, 0, 0) };
             browse.Click += Browse; Grid.SetColumn(browse, 1); row.Children.Add(browse); Add(panel, "Local media (PNG / JPEG / BMP / MP4 / WMV / AVI)", row);
-            seconds.Text = (p.Mode == "eva" ? p.EvaSeconds : p.ImageSeconds).ToString(CultureInfo.CurrentCulture); Add(panel, "Sequence duration (1-120 seconds; videos play to the end)", seconds);
+            seconds.Text = (p.Mode == "eva" ? p.EvaSeconds : p.ImageSeconds).ToString(CultureInfo.CurrentCulture); Add(panel, "Image / legacy duration (original sequence follows speech timing)", seconds);
             mode.SelectionChanged += delegate { seconds.Text = (mode.SelectedIndex == 3 ? p.EvaSeconds : p.ImageSeconds).ToString(CultureInfo.CurrentCulture); };
             fade.Text = p.FadeSeconds.ToString(CultureInfo.CurrentCulture); Add(panel, "Exit fade (0-2 seconds)", fade);
             fit.ItemsSource = new[] { "Fill screen (crop)", "Fit screen (letterbox)" }; fit.SelectedIndex = p.Fit == "contain" ? 1 : 0; Add(panel, "Screen fit", fit);

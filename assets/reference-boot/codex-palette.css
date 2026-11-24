@@ -1,0 +1,14 @@
+/* 只覆盖角色配色；布局、字号、位置、动画时长继续使用原版样式。 */
+#dsh-startup-root .dsu-btn.dsu-pulse { animation-name:codex-pulse; }
+@keyframes codex-pulse {
+  0%,100% { box-shadow:0 0 0 0 transparent; }
+  50% { box-shadow:0 0 0 7px color-mix(in srgb,var(--dsu-accent) 14%,transparent); }
+}
+#dsh-startup-root.dsu-peak .dsu-w1,
+#dsh-startup-root.dsu-peak .dsu-w4 {
+  color:var(--dsu-glitch-a);
+  text-shadow:0 0 14px color-mix(in srgb,var(--dsu-glitch-a) 55%,var(--dsu-glitch-b));
+}
+#dsh-startup-root.dsu-peak .dsu-w3 svg {
+  filter:drop-shadow(0 0 10px color-mix(in srgb,var(--dsu-glitch-a) 45%,var(--dsu-glitch-b)));
+}
