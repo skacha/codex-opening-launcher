@@ -1,0 +1,16 @@
+/* 核验长标题收紧字距，并取消隐藏光标占位，避免首字与旋转圆弧相交。 */
+#dsh-startup-root[data-codex-step="5"] .dsu-status.dsu-zhline {
+  font-size:34px;
+  line-height:1.4;
+  letter-spacing:0.12em;
+  text-indent:0;
+}
+#dsh-startup-root[data-codex-step="5"] .dsu-caret { display:none; }
+#dsh-startup-root[data-codex-step="5"] .dsu-sub-en {
+  font-size:12px;
+  margin-top:12px;
+  letter-spacing:0.32em;
+  text-indent:0;
+}
+#dsh-startup-root[data-codex-step="5"] .dsu-rule.dsu-in { width:min(380px,36vw); }
+#dsh-startup-root[data-codex-step="5"] .dsu-logo { overflow:hidden; }

@@ -6,7 +6,7 @@ Windows 本地启动器：先播放开场并完成授权交互，再在同一显
 
 ![Codex 原版接入与龙娘配色](docs/previews/reference-request.png)
 
-[完整有声预览](docs/previews/reference-codex-preview.mp4) · [原版移植与配色验证](docs/原版移植与龙娘配色.md) · [第三方说明](THIRD_PARTY_NOTICES.md)
+[完整有声预览](docs/previews/reference-codex-preview.mp4) · [核验页排版](docs/previews/reference-verify.png) · [原版移植与配色验证](docs/原版移植与龙娘配色.md) · [第三方说明](THIRD_PARTY_NOTICES.md)
 
 ## 构建与启动
 
@@ -49,11 +49,11 @@ Copy-Item settings.example.json settings.json
 
 | 位置 | 新颜色 |
 | --- | --- |
-| 原强调色：时钟、阶段条、声纹、准星小点、按钮光圈 | 轮廓黑 `#120C1B` |
+| 原强调色：时钟、阶段条、声纹、准星小点、按钮光圈 | 淡紫 `#C4BBDB` |
 | 原蓝色光晕与一层色散 | 淡紫 `#C4BBDB` |
 | 另一层色散、银白高光 | 银白 `#F9F5FA` |
 
-原版底板、留白和尺寸保留。只在 `codex-palette.css` 覆盖角色配色，不改原版 CSS 的布局与动画参数。颜色值集中在 `assets/reference-boot/palette.json`，网页适配层读取这些颜色。角色三视图本身不随仓库上传，也不会作为开场背景。
+原版底板和留白保留。角色配色在 `codex-palette.css` 覆盖；核验页在 `codex-layout.css` 局部收紧长标题字号、字距和分隔线，圆环对实际中英文字区域保留净空，避免逐字显现时遮住首字。原版 CSS 文件与动画时长保留。颜色值集中在 `assets/reference-boot/palette.json`，网页适配层读取这些颜色。角色三视图本身不随仓库上传，也不会作为开场背景。
 
 ## 多屏与数据位置
 

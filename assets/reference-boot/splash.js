@@ -1393,7 +1393,7 @@
 
   /* Codex 适配接入点：保留原版布局与播放流程。 */
   if (window.__CODEX_REFERENCE_ADAPTER__) {
-    window.__CODEX_REFERENCE_ADAPTER__({ui:ui,root:root,config:C,steps:STEPS,voice:voice,releaseAll:releaseAll,stopHex:stopHex,setProgress:setProgress,setSlats:setSlats,setStepCount:setStepCount,showAction:showAction})
+    window.__CODEX_REFERENCE_ADAPTER__({ui:ui,root:root,config:C,steps:STEPS,voice:voice,releaseAll:releaseAll,stopHex:stopHex,setProgress:setProgress,setSlats:setSlats,setStepCount:setStepCount,showAction:showAction,typeIn:typeIn})
     if (window.__CODEX_HOST_CONFIG__ && window.__CODEX_HOST_CONFIG__.capture) {
       root.classList.remove('dsu-boot')
       return

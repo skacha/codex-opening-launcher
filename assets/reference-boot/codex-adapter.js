@@ -11,7 +11,7 @@
     brand1: 'CODEX', brand2: 'SYNTHESIZE INTELLIGENCE', brand3a: 'CODEX', brand3b: 'OS',
     orgZh: 'CODEX', orgEn: 'CODEX', orgSub: 'OPENAI CODEX',
     welcomeBox: 'CODEX', footer: 'POWERED BY CODEX',
-    accent:palette.black,glitchA:palette.purple,glitchB:palette.white
+    accent:palette.purple,glitchA:palette.purple,glitchB:palette.white
   }, host)
   function post(event, details) {
     if (window.chrome && window.chrome.webview) window.chrome.webview.postMessage(Object.assign({event:event},details||{}))
@@ -34,6 +34,29 @@
     root.style.setProperty('--dsu-box-bg',palette.black)
     root.style.setProperty('--dsu-box-ink',palette.white)
     ui.w4.textContent='欢迎 '+C.identity+' 访问'
+
+    // 核验时让圆弧避让实际文字包围框，逐字动画和窗口缩放期间也保留阅读净空。
+    var ns='http://www.w3.org/2000/svg',reticleSvg=ui.reticle.querySelector('svg')
+    var drawing=document.createElementNS(ns,'g'),defs=document.createElementNS(ns,'defs')
+    var textMask=document.createElementNS(ns,'mask'),maskBase=document.createElementNS(ns,'rect'),textGap=document.createElementNS(ns,'rect')
+    while(reticleSvg.firstChild)drawing.appendChild(reticleSvg.firstChild)
+    textMask.setAttribute('id','codex-text-clearance');textMask.setAttribute('maskUnits','userSpaceOnUse')
+    textMask.setAttribute('x','0');textMask.setAttribute('y','0');textMask.setAttribute('width','400');textMask.setAttribute('height','400')
+    maskBase.setAttribute('width','400');maskBase.setAttribute('height','400');maskBase.setAttribute('fill','white')
+    textGap.setAttribute('fill','black');textGap.setAttribute('width','0');textGap.setAttribute('height','0')
+    textMask.appendChild(maskBase);textMask.appendChild(textGap);defs.appendChild(textMask)
+    drawing.setAttribute('mask','url(#codex-text-clearance)');reticleSvg.appendChild(defs);reticleSvg.appendChild(drawing)
+    var gapState=''
+    function keepTextClear(){
+      if(root.getAttribute('data-codex-step')!=='5'){if(gapState){textGap.setAttribute('width','0');gapState=''}return}
+      var ring=reticleSvg.getBoundingClientRect(),title=ui.status.getBoundingClientRect(),subtitle=ui.subEn.getBoundingClientRect()
+      if(!ring.width||!ring.height)return
+      var pad=12,left=Math.min(title.left,subtitle.left)-pad,right=Math.max(title.right,subtitle.right)+pad
+      var top=Math.min(title.top,subtitle.top)-pad,bottom=Math.max(title.bottom,subtitle.bottom)+pad
+      var values=[(left-ring.left)*400/ring.width,(top-ring.top)*400/ring.height,(right-left)*400/ring.width,(bottom-top)*400/ring.height].map(function(n){return n.toFixed(3)})
+      var state=values.join('/');if(state===gapState)return;gapState=state
+      ;['x','y','width','height'].forEach(function(name,i){textGap.setAttribute(name,values[i])})
+    }
 
     // 使用本地生成的英文机械声，不读取上游第三方录音。
     api.voice.line=function (en,zh,name) {
@@ -64,6 +87,7 @@
     function announce() {
       var match=ui.stepcount.textContent.match(/\[\s*(\d+)/)
       var next=match?Number(match[1]):0
+      if(root.getAttribute('data-codex-step')!==String(next))root.setAttribute('data-codex-step',String(next))
       if(next!==step){step=next;post('phase',{step:step})}
       if(next>=3&&ui.idline.classList.contains('dsu-in'))ui.idline.classList.remove('dsu-in')
       if(C.requireInteraction&&step>0&&step<3&&ui.action.classList.contains('dsu-in')&&!confirmed['wait'+step]) {
@@ -83,6 +107,7 @@
     document.addEventListener('click',afterInput,true)
     document.addEventListener('keydown',afterInput,true)
     function count(stamp) {
+      keepTextClear()
       if(lastFrame&&intervals.length<8192)intervals.push(stamp-lastFrame)
       lastFrame=stamp;frameCount++;window.requestAnimationFrame(count)
     }
@@ -94,6 +119,7 @@
     window.__CODEX_CAPTURE__={
       seek:function(index,seconds){
         api.stopHex();api.releaseAll()
+        root.setAttribute('data-codex-step',String(index))
         root.classList.remove('dsu-boot','dsu-gone','dsu-handoff','dsu-peak')
         ui.blackInner.className='dsu-black-inner dsu-in'
         ui.blackEn.classList.add('dsu-tighten')
@@ -112,8 +138,8 @@
         ui.meta2.textContent='13:01:35'
         if(index>0&&index<6){
           var s=api.steps[index-1]
-          ui.status.classList.add('dsu-zhline','dsu-in');ui.statusZh.textContent=s.zh
-          ui.subEn.classList.add('dsu-in');ui.subEn.textContent=s.en;ui.rule.classList.add('dsu-in')
+          ui.status.classList.add('dsu-zhline','dsu-in');api.typeIn(ui.statusZh,s.zh,46)
+          ui.subEn.classList.add('dsu-in');api.typeIn(ui.subEn,s.en,13);ui.rule.classList.add('dsu-in')
           ui.caret.classList.toggle('dsu-on',index<3)
           ui.subZh.textContent=s.log;ui.subEn2.textContent=s.logEn
           ui.subZh.classList.add('dsu-in');ui.subEn2.classList.add('dsu-in')
@@ -126,6 +152,7 @@
           ui.subZh.classList.add('dsu-in');ui.subEn2.classList.add('dsu-in');ui.idline.classList.remove('dsu-in')
         }
         // 固定导出时刻的动画相位；实际播放继续使用浏览器原生合成动画。
+        void root.offsetWidth
         document.getAnimations().forEach(function(a){a.pause();a.currentTime=seconds*1000})
         return stats()
       },
