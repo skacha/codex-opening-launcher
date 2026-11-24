@@ -16,7 +16,7 @@ namespace CodexOpening
             if (spoken) try
             {
                 var root = new JavaScriptSerializer().Deserialize<Dictionary<string, object>>(File.ReadAllText(Path.Combine(Program.Root, "assets", "voice", "台词.json")));
-                var metrics = (object[])root["Metrics"];
+                var metrics = (System.Collections.IList)root["Metrics"];
                 var measured = new double[5];
                 for (int i = 0; i < 5; i++)
                 {

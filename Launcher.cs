@@ -239,6 +239,21 @@ namespace CodexOpening
             p.Mode = "eva"; p.EvaSeconds = 8; p.Normalize();
             if (p.Mode != "eva" || p.EvaSeconds != 8) return 6;
             results.Add("EVA 模式与独立时长：通过");
+            // 使用独立时长样本验证集合解析，防止类型转换失败后静默落入估算时间轴。
+            string runtimeRoot = Root;
+            try
+            {
+                Root = Path.Combine(output, "timeline-fixture");
+                string voiceFixture = Path.Combine(Root, "assets", "voice"); Directory.CreateDirectory(voiceFixture);
+                File.WriteAllText(Path.Combine(voiceFixture, "台词.json"), "{\"Metrics\":[{\"Seconds\":1},{\"Seconds\":2},{\"Seconds\":3},{\"Seconds\":4},{\"Seconds\":5}]}");
+                var fixtureTimeline = new BootTimeline(24, true);
+                double[] expectedStarts = { 0, 2.8, 6.6, 11.4, 17.2 };
+                for (int i = 0; i < 5; i++)
+                    if (Math.Abs(fixtureTimeline.Starts[i] - expectedStarts[i]) > 0.000001 || Math.Abs(fixtureTimeline.VisualProgress(expectedStarts[i]) - i / 5.0) > 0.000001) return 7;
+                if (fixtureTimeline.Duration != 24 || fixtureTimeline.VisualProgress(26) != 1) return 8;
+                results.Add("语音元数据集合解析与阶段边界：通过");
+            }
+            finally { Root = runtimeRoot; }
             string original = ConfigPath; ConfigPath = Path.Combine(output, "roundtrip.json");
             p.MediaPath = "中文 空格 # 图片.png"; Save(p);
             if (Load().MediaPath != p.MediaPath) return 2;
@@ -295,7 +310,7 @@ namespace CodexOpening
             Program.DisplayDevice = display.Device;
             SourceInitialized += delegate { if (!Program.Preview) display.BeginIntro(); if (!Program.Windowed) display.PlaceSplash(this); };
             if (Program.Windowed) { WindowState = WindowState.Normal; Width = 960; Height = 600; WindowStartupLocation = WindowStartupLocation.CenterScreen; Topmost = false; }
-            scene.Background = new SolidColorBrush(Color.FromRgb(9, 15, 18));
+            scene.Background = new SolidColorBrush(p.Mode == "eva" ? Color.FromRgb(241, 242, 238) : Color.FromRgb(9, 15, 18));
             scene.Children.Add(stage);
             if (p.Mode == "eva")
             { evaScene = new EvaBootScene(); stage.Children.Add(evaScene); timer.Interval = TimeSpan.FromMilliseconds(33); }
@@ -311,28 +326,31 @@ namespace CodexOpening
             skip.Margin = new Thickness(12, 0, 0, 0); skip.Click += delegate { SkipOrCancel(); };
             if (p.Mode == "eva")
             {
-                footer.Margin = new Thickness(44, 0, 44, 12);
-                note.Foreground = new SolidColorBrush(Color.FromRgb(129, 174, 190));
+                footer.Margin = new Thickness(44, 0, 44, 8);
+                note.Foreground = new SolidColorBrush(Color.FromRgb(102, 113, 119));
+                note.FontFamily = new FontFamily("Consolas"); note.FontSize = 10;
                 foreach (var control in new[] { settings, skip })
-                { control.Background = new SolidColorBrush(Color.FromRgb(12, 27, 38)); control.BorderBrush = new SolidColorBrush(Color.FromRgb(36, 89, 107)); control.Foreground = new SolidColorBrush(Color.FromRgb(85, 221, 245)); }
+                { control.Background = Brushes.Transparent; control.BorderBrush = new SolidColorBrush(Color.FromRgb(206, 212, 209)); control.Foreground = new SolidColorBrush(Color.FromRgb(23, 29, 32)); control.FontFamily = new FontFamily("Consolas"); control.FontSize = 11; control.Padding = new Thickness(12, 4, 12, 4); }
             }
             controls.Children.Add(skip); Grid.SetColumn(controls, 1); footer.Children.Add(controls); scene.Children.Add(footer);
             confirmButton.Visibility = Visibility.Collapsed; confirmButton.IsEnabled = false;
-            confirmButton.Background = new SolidColorBrush(Color.FromRgb(8, 24, 32)); confirmButton.Foreground = new SolidColorBrush(Color.FromRgb(85, 221, 245));
-            confirmButton.BorderBrush = confirmButton.Foreground;
+            confirmButton.Background = new SolidColorBrush(Color.FromRgb(23, 29, 32)); confirmButton.Foreground = new SolidColorBrush(Color.FromRgb(241, 242, 238));
+            confirmButton.BorderBrush = new SolidColorBrush(Color.FromRgb(0, 127, 147));
             confirmButton.FontFamily = new FontFamily("Consolas"); confirmButton.Padding = new Thickness(0);
             var border = new FrameworkElementFactory(typeof(Border));
             border.SetValue(Border.BackgroundProperty, new TemplateBindingExtension(Control.BackgroundProperty));
             border.SetValue(Border.BorderBrushProperty, new TemplateBindingExtension(Control.BorderBrushProperty));
-            border.SetValue(Border.BorderThicknessProperty, new Thickness(1));
+            border.SetValue(Border.BorderThicknessProperty, new TemplateBindingExtension(Control.BorderThicknessProperty));
             var presenter = new FrameworkElementFactory(typeof(ContentPresenter));
             presenter.SetValue(FrameworkElement.HorizontalAlignmentProperty, HorizontalAlignment.Center);
             presenter.SetValue(FrameworkElement.VerticalAlignmentProperty, VerticalAlignment.Center); border.AppendChild(presenter);
             var template = new ControlTemplate(typeof(Button)) { VisualTree = border };
             var hover = new Trigger { Property = UIElement.IsMouseOverProperty, Value = true };
-            hover.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Color.FromRgb(21, 69, 84)))); template.Triggers.Add(hover);
+            hover.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Color.FromRgb(0, 102, 119)))); template.Triggers.Add(hover);
             var pressed = new Trigger { Property = System.Windows.Controls.Button.IsPressedProperty, Value = true };
-            pressed.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Color.FromRgb(33, 97, 110)))); template.Triggers.Add(pressed);
+            pressed.Setters.Add(new Setter(Control.BackgroundProperty, new SolidColorBrush(Color.FromRgb(0, 79, 93)))); template.Triggers.Add(pressed);
+            var focused = new Trigger { Property = UIElement.IsKeyboardFocusedProperty, Value = true };
+            focused.Setters.Add(new Setter(Control.BorderThicknessProperty, new Thickness(2))); template.Triggers.Add(focused);
             var disabled = new Trigger { Property = UIElement.IsEnabledProperty, Value = false };
             disabled.Setters.Add(new Setter(UIElement.OpacityProperty, 0.45)); template.Triggers.Add(disabled);
             confirmButton.Template = template;
@@ -589,7 +607,7 @@ namespace CodexOpening
         private readonly TextBox seconds = new TextBox();
         private readonly TextBox fade = new TextBox();
         private readonly Slider volume = new Slider { Minimum = 0, Maximum = 100, TickFrequency = 10 };
-        private readonly CheckBox bgmEnabled = new CheckBox { Content = "Enable EVA background music" };
+        private readonly CheckBox bgmEnabled = new CheckBox { Content = "Enable boot sequence background music" };
         private readonly Slider bgmVolume = new Slider { Minimum = 0, Maximum = 100, TickFrequency = 10 };
         private readonly CheckBox voiceEnabled = new CheckBox { Content = "Enable English AI voice (24s recommended; muted below 15s)" };
         private readonly CheckBox confirmRequired = new CheckBox { Content = "Wait for confirmation before entering Codex" };
@@ -607,7 +625,7 @@ namespace CodexOpening
             panel.Children.Add(new TextBlock { Text = "CODEX STARTUP CONTROL", FontSize = 23, Margin = new Thickness(0, 0, 0, 10) });
             panel.Children.Add(new TextBlock { Text = "Changes apply to the next launch from the Codex startup shortcut.", TextWrapping = TextWrapping.Wrap, Foreground = Brushes.DimGray, Margin = new Thickness(0, 0, 0, 22) });
             enabled.IsChecked = p.Enabled; panel.Children.Add(enabled);
-            mode.ItemsSource = new[] { "Built-in", "Image", "Video", "EVA · NERV / MAGI" }; mode.SelectedIndex = p.Mode == "eva" ? 3 : p.Mode == "image" ? 1 : p.Mode == "video" ? 2 : 0;
+            mode.ItemsSource = new[] { "Built-in", "Image", "Video", "Codex · Command OS" }; mode.SelectedIndex = p.Mode == "eva" ? 3 : p.Mode == "image" ? 1 : p.Mode == "video" ? 2 : 0;
             Add(panel, "Startup content", mode);
             var row = new Grid(); row.ColumnDefinitions.Add(new ColumnDefinition()); row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             media.Text = p.MediaPath; media.Padding = new Thickness(7); row.Children.Add(media);
@@ -619,7 +637,7 @@ namespace CodexOpening
             fit.ItemsSource = new[] { "Fill screen (crop)", "Fit screen (letterbox)" }; fit.SelectedIndex = p.Fit == "contain" ? 1 : 0; Add(panel, "Screen fit", fit);
             volume.Value = p.Volume * 100; Add(panel, "Video volume (0-100)", volume);
             bgmEnabled.IsChecked = p.BgmEnabled; bgmEnabled.Margin = new Thickness(0, 15, 0, 0); panel.Children.Add(bgmEnabled);
-            bgmVolume.Value = p.BgmVolume * 100; Add(panel, "EVA music volume (default 38.5%)", bgmVolume);
+            bgmVolume.Value = p.BgmVolume * 100; Add(panel, "Boot music volume (default 38.5%)", bgmVolume);
             voiceEnabled.IsChecked = p.VoiceEnabled; voiceEnabled.Margin = new Thickness(0, 15, 0, 0); panel.Children.Add(voiceEnabled);
             voiceVolume.Value = p.VoiceVolume * 100; Add(panel, "AI voice volume (0-100)", voiceVolume);
             confirmRequired.IsChecked = p.ConfirmRequired; confirmRequired.Margin = new Thickness(0, 15, 0, 0); panel.Children.Add(confirmRequired);
