@@ -1,4 +1,34 @@
-/* 核验长标题收紧字距，并取消隐藏光标占位，避免首字与旋转圆弧相交。 */
+/* 光标独立定位，隐藏时不占宽度，让中英文标题共享中轴。 */
+#dsh-startup-root .dsu-status { position:relative;display:block; }
+#dsh-startup-root .dsu-status.dsu-zhline { text-indent:0; }
+#dsh-startup-root .dsu-status-zh { display:block;padding-left:0.22em; }
+#dsh-startup-root .dsu-caret { position:absolute;left:calc(100% + 14px);top:50%;transform:translateY(-50%); }
+#dsh-startup-root .dsu-logo:not(.dsu-in) { display:none; }
+#dsh-startup-root .dsu-dots[hidden] { display:none; }
+/* 数字使用带斜线零的等宽字形，品牌 OS 使用字母字形；编号保持等宽。 */
+#dsh-startup-root { --dsu-mono:"Consolas","Cascadia Mono",ui-monospace,monospace; }
+#dsh-startup-root .dsu-meta,
+#dsh-startup-root .dsu-idline,
+#dsh-startup-root .dsu-stepcount,
+#dsh-startup-root .dsu-card-row b:not(.dsu-zhname) { font-family:var(--dsu-mono);font-variant-numeric:tabular-nums slashed-zero;font-feature-settings:"zero" 1; }
+#dsh-startup-root .dsu-brand-3 span { font-family:"Segoe UI",sans-serif; }
+#dsh-startup-root .dsu-brand-1,
+#dsh-startup-root .dsu-brand-3,
+#dsh-startup-root .dsu-black-en,
+#dsh-startup-root .dsu-w1,
+#dsh-startup-root .dsu-w2 { font-family:"Segoe UI","Bahnschrift",sans-serif; }
+/* 编号移入左侧资料栏，避免与英文标题、龙娘脸部发生重叠。 */
+#dsh-startup-root .dsu-idline { left:46px;top:216px;transform:translateX(16px);font-size:10px; }
+#dsh-startup-root .dsu-idline.dsu-in { transform:none; }
+/* 中英按钮使用明确行高，身份资料逐行垂直居中。 */
+#dsh-startup-root .dsu-btn { line-height:1.5; }
+#dsh-startup-root .dsu-btn-zh,
+#dsh-startup-root .dsu-btn-en { display:block;line-height:1.5; }
+#dsh-startup-root .dsu-card-row { align-items:center;line-height:1.5; }
+#dsh-startup-root .dsu-w2 { display:flex;align-items:center;justify-content:center;line-height:1.2; }
+/* 核验长标题收紧字距，标题组与圆环共享垂直中点。 */
+#dsh-startup-root[data-codex-step="5"] .dsu-center { top:45%; }
+#dsh-startup-root[data-codex-step="5"] .dsu-status-zh { padding-left:0.12em; }
 #dsh-startup-root[data-codex-step="5"] .dsu-status.dsu-zhline {
   font-size:34px;
   line-height:1.4;
@@ -12,5 +42,5 @@
   letter-spacing:0.32em;
   text-indent:0;
 }
-#dsh-startup-root[data-codex-step="5"] .dsu-rule.dsu-in { width:min(380px,36vw); }
+#dsh-startup-root[data-codex-step="5"] .dsu-rule.dsu-in { width:min(380px,36vw);position:absolute;top:100%;margin-top:14px; }
 #dsh-startup-root[data-codex-step="5"] .dsu-logo { overflow:hidden; }

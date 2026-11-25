@@ -11,10 +11,10 @@
  *   --dsu-zh    微软雅黑（对应参考片底部中文小字幕）
  * ========================================================================== */
 
-#dsh-startup-root,
+:where(#dsh-startup-root,
 #dsh-startup-root *,
 #dsh-startup-root *::before,
-#dsh-startup-root *::after {
+#dsh-startup-root *::after) {
   box-sizing: border-box;
   margin: 0;
   padding: 0;

@@ -25,10 +25,12 @@
     // 只替换品牌标识，保留原来的 SVG 容器、勾线组装与落墨动画。
     var mark='M7 10 L23 24 L7 38 L11 42 L32 24 L11 6 Z M30 37 H47 V42 H30 Z'
     ;[ui.blackInner,ui.logo,ui.w3].forEach(function (container) {
-      var path=container.querySelector('svg path'); if(path) path.setAttribute('d',mark)
+      var svg=container.querySelector('svg'),path=svg.querySelector('path')
+      if(path)path.setAttribute('d',mark)
+      svg.setAttribute('viewBox','2 -1 50 50')
     })
-    ui.logo.querySelector('.dsu-logolabel').textContent='C O D E X'
-    ui.w3.querySelector('.dsu-w3label').textContent='C O D E X'
+    ui.logo.querySelector('.dsu-logolabel').textContent='CODEX'
+    ui.w3.querySelector('.dsu-w3label').textContent='CODEX'
     ui.meta1.textContent='REV 0.1.0 · WEB PROFILE'
     root.style.setProperty('--dsu-ink',palette.black)
     root.style.setProperty('--dsu-box-bg',palette.black)
